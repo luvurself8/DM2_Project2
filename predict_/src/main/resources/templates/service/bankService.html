@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>은행서비스</title>
+
+    <style>
+           #chartdiv {
+               width: 100%;
+               height: 400px;
+           }
+           
+          /** #chartcontrols {
+            height: auto;
+            padding: 5px 5px 0 16px;
+            max-width: 100%;
+        }
+    
+
+           #StockChart {
+            width: 100%;
+            height: 600px;
+            max-width: 100%;
+        }*/
+    </style>
+
+    <link rel="stylesheet" href="./css/header.css" th:href="@{/css/header.css}">
+    <link rel="stylesheet" href="./css/bankService.css" th:href="@{/css/bankService.css}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+
+    <script defer th:src="@{/script/bankService.js}" src="./script/bankservice.js"></script>
+    <!--<script defer th:src="@{/script/bankServiceChart.js}"></script>  -->
+    <!--<script defer th:src="@{/script/bankServiceStockChart.js}"></script>-->
+
+    <!-- jQuery -->
+    <script th:src="@{/script/jquery-3.7.0.min.js}" src="./script/jquery-3.7.0.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    <!--<script src="https://cdn.amcharts.com/lib/5/stock.js"></script>-->
+
+
+</head>
+
+<body>
+    <div class="wrapper">
+
+          <!--header start-->
+           <!--header start-->
+           <div class="header">
+            <div  class="logo">
+                <a th:href="@{/}"  class="logo">TRIPCORD</a>
+            </div><!--end.logo-->
+            <div class="menubar">
+                <ul>
+               <li><a href="bankservice.html" th:href="@{/service/bankService}">환율 계산기</a></li>
+                    <li sec:authorize="not isAuthenticated()"><a href="signin.html" th:href="@{/member/signin}">로그인</a></li>
+                    <li sec:authorize="not isAuthenticated()"><a href="signup.html" th:href="@{/member/signup}">회원가입</a></li>
+               <li sec:authorize="isAuthenticated()">[[${#authentication.name}]]님</li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/member/signout}">로그아웃</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/member/myPage}">마이페이지</a></li>
+                </ul>
+            </div>
+
+        </div> <!--end.header-->
+        
+        
+        
+       
+        
+        <!-- 주식 차트 test 장소 -->
+        <!--  <div id="chartcontrols"></div>
+        <div id="StockChart"></div> -->
+        
+        
+        
+       <!-- contact section start -->
+        <div class="bank_container">
+            <div class="bank_row1">
+                <div class="currency_button_container">
+                    <div class="bank_button_container">
+                        <input type="button" class="bank_btn" id="usdChart" value="USD">
+                    </div>
+                    <div class="bank_button_container">
+                        <input type="button" class="bank_btn" id="eurChart" value="EUR">
+                    </div>
+                    <div class="bank_button_container">
+                        <input type="button" class="bank_btn" id="jpyChart" value="JPY">
+                    </div>
+                    <div class="bank_button_container">
+                        <input type="button" class="bank_btn" id="cnyChart" value="CNY">
+                    </div>
+                </div>
+                <div class="bank_output_container">
+                    <!--<select class="country_select1">
+                                                <option>KRW</option> 
+                    </select>-->
+                    <div class = "input_wrapper">
+                    <div class = "won">
+                    <label for = "won">금액(원): </label>
+                    <input type="text" class="bank_trans_input" placeholder="원">
+                    </div>
+                    
+                    <div class = "dollar">
+                    <label for = "dollar">환전액: </label>
+                    <input type="text" class="bank_trans_output" placeholder="달러" readonly>
+               </div>
+               
+               <div class = "mostrecent">
+               <label for = "mostrecent">현재 환율: </label>
+                    <input type="text" class="exchange_rate_mostrecent" placeholder="현재환율" readonly>
+                    </div>
+                    </div>
+                    <a  style="text-decoration:none" th:href="@{/service/mapService}"><input type="button" class="bank_finder_btn" value="가까운 은행 찾기"></a>               
+                </div> <!--end.bank output container-->
+                <!-- 그래프 test장소 -->
+                
+            </div><!--end.bank_row1-->
+
+            <div class="bank_row2">
+                <div id="chartdiv"></div>  
+            </div><!--bank_row2-->
+        </div><!--bank_container-->
+
+         <!--footer start-->
+        <div class="footer">
+            <div class="footer-menu">
+                <ul>
+                    <li><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/service/bankService}">Bank Service</a></li>
+                    <li><a th:href="@{/service/mapService}">Map Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-content">
+                <p class="border-bottom">&copy; 2023 FX predict. All Rights Reserved.</p>
+                <div class="btn-social">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div><!--end.footer-->
+    </div><!--end.wrapper-->
+</body>
+
+</html>

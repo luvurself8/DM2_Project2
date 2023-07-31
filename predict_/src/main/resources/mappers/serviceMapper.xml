@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.kdigital.project.mapper.ServiceMapper">
+	
+	
+	<select id="selectAll" parameterType="String" resultType="Exchange">
+		SELECT rate_time 
+						,usd
+						,cny
+				        ,jpy
+						,euro
+		FROM exrate
+		ORDER BY rate_time DESC
+	</select>
+	
+	<!-- 모든 환율 조회   -->
+	<select id="selectStock" resultType="Stock"> 
+		SELECT 
+			datetime,
+			close_rate,
+			open_rate,
+			high_rate,
+			low_rate
+ 		FROM price
+	</select>
+	
+	<!--  회원의 한 여행에 대한 Daynum 중복없이 조회  -->
+	<select id="selectDaynum" parameterType="int" >
+	SELECT 
+			DISTINCT daynum
+	FROM  planservice
+	WHERE planseq = #{planseq}
+	ORDER BY daynum 
+	
+	</select>
+
+	<!-- 한 회원의 하나의 여행 조회  -->
+	<select id="selectPlan" parameterType="int" resultType="Plan">
+	SELECT 
+            planseq,
+            destination,
+            TO_CHAR(startdate, 'YYYY-MM-DD') as startdate,
+            TO_CHAR(enddate, 'YYYY-MM-DD') as enddate  
+	FROM  member_plan 
+	WHERE planseq = #{planseq}
+	 </select>
+	 
+	 <!-- 한 여행에 대한 하루 여정 조회   -->
+	 <select id="selectPlanOneday" parameterType="map" resultType="PlanService">
+	 SELECT 
+	 	planseq, planservice_seq, daynum,placenum,placename,placebudget,placememo, placeexpenditure,lat,lng
+	 FROM planservice
+	 WHERE daynum = #{daynum} AND planseq = #{planseq}
+	 ORDER BY placenum 
+
+	 </select>
+	 
+	 <!-- 여행삭제 -->
+	 
+	<delete id="deletePlanservice" parameterType="map">
+	delete planservice
+	where planseq= #{planseq} and daynum = #{daynum}
+	</delete> 
+	
+	<!-- 여행 넣기 -->
+	<insert id="insertPlanService" parameterType="PlanService">
+  INSERT INTO planservice
+  (
+    planseq,
+    planservice_seq,
+    daynum,
+    placenum,
+    placename,
+    placebudget,
+    placememo,
+    lat,
+    lng
+    <if test="placeexpenditure != null">,
+    placeexpenditure</if>
+  )
+  VALUES
+  (
+    #{planseq},
+    planservice_seq.nextval,
+    #{daynum},
+    #{placenum},
+    #{placename},
+    #{placebudget},
+    #{placememo},
+    #{lat},
+    #{lng}
+    <if test="placeexpenditure != null">,
+    #{placeexpenditure}</if>
+  )
+</insert>
+
+	
+	
+	  <!-- 환율 한 컬럼 조회   -->
+	<select id="selectOneStock" parameterType="String" resultType="Exchange">
+		SELECT rate_time 
+		<if test="chartname == 'USD'">,usd</if>
+		<if test="chartname == 'CNY'">,cny</if>
+		<if test="chartname == 'JPY'">,jpy</if>
+		<if test="chartname == 'EUR'">,euro</if>
+		FROM exrate
+		ORDER BY rate_time DESC
+	</select>
+	
+	<select id="selectDayOnePlan" parameterType="int"  resultType="PlanService">
+	SELECT 
+				planseq,
+				placenum,
+				placename,
+				placebudget,
+				placememo,
+				placeexpenditure
+	FROM  planservice
+	WHERE planseq = #{planseq} AND daynum = 1
+	
+	</select>
+	<!--   Day 마다의 일기 조회 -->
+	<select id="selectDiaryOneday" parameterType="map" resultType="Diary">
+	SELECT 
+			planseq,
+			daynum,
+			diary_seq,
+			TO_CHAR(regdate, 'YYYY-MM-DD') as regdate,
+			diary_title,
+			diary_text
+	FROM diary
+	WHERE planseq = #{planseq} AND daynum = #{daynum}
+
+	</select>
+	
+	
+	<update id="updateDiary" parameterType="Diary">
+	UPDATE diary
+	SET 
+		diary_title = #{diary_title},
+		diary_text = #{diary_text},
+		regdate = sysdate
+	WHERE diary_seq = #{diary_seq}
+	
+	</update>
+	
+	
+	<delete id="deleteDiary" parameterType="int">
+	DELETE diary
+	WHERE diary_seq = #{diary_seq}
+	</delete>
+	
+	
+	<insert id="insertDiary" parameterType="Diary">
+	INSERT INTO diary 
+	VALUES 
+	(#{planseq}, #{daynum}, diary_seq.NEXTVAL,#{regdate}, #{diary_title}, #{diary_text})
+	
+	</insert>
+</mapper>

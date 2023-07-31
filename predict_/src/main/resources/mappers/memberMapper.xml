@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.kdigital.project.mapper.MemberMapper">
+	
+	<!-- 회원가입 -->
+	<insert id="insertMember" parameterType="Member">
+	INSERT INTO members
+		(memberid, memberpwd, membername, email, phone)
+	VALUES
+		(#{memberid},#{memberpwd},#{membername},#{email},#{phone})
+	</insert>
+	
+	<!--  회원정보 조회 / 아이디체크  -->
+	<select id="selectOne" parameterType="String" resultType="Member">
+	SELECT * FROM members
+	WHERE memberid = #{memberid}
+	</select>
+	
+	<!-- 한 회원의 전체 여행 조회   -->
+	<select id="selectPlan" parameterType="map" resultType="Plan">
+	SELECT 
+				memberid,
+				planseq,
+				plantitle,
+				TO_CHAR(startdate, 'YYYY-MM-DD') as startdate,
+				TO_CHAR(enddate, 'YYYY-MM-DD') as enddate,
+				departure,
+				destination
+	FROM member_plan 
+	WHERE memberid = #{memberid}
+				<if test="planseq != 0">
+				AND planseq = #{planseq}
+				</if>
+	ORDER BY planseq DESC
+	</select>
+
+<!--새로운 여행 등록   -->
+	<insert id="insertPlan" parameterType="Plan">
+	INSERT INTO member_plan
+	(memberid,planseq,plantitle,startdate,enddate,departure,destination)
+	VALUES
+	(#{memberid},member_plan_seq.NEXTVAL,#{plantitle},#{startdate},#{enddate},#{departure},#{destination})
+	</insert>
+	
+	<!--여행 하나 조회 (planservice 화면 들어감)   -->
+	<select id="selectOnePlan" parameterType="int" resultType="PlanService">
+	SELECT 
+		planseq,
+		placenum,
+		placename,
+		placeaddress,
+		placememo
+	FROM planservice
+	WHERE planseq = #{planseq}
+	
+	</select>
+	
+	<!--중복없이 Daynum  조회  -->
+	<select id="selectDaynum" parameterType="int" resultType="PlanService">
+	SELECT 
+			DISTINCT daynum
+	FROM  planservice
+	WHERE planseq = #{planseq}
+	
+	</select>
+	
+	<!-- 화면 출력하며 기본으로 출력할 Day 1 여정 조회 -->
+	<select id="selectDayOneRoute" parameterType="map" resultType="PlanService">
+	SELECT 
+			placename,
+	 		placeaddress,
+	 		placenum,
+	 		placememo
+	FROM 
+			planservice
+	WHERE planseq = #{planseq} 
+			AND 
+			   daynum = #{daynum}
+	
+	</select>
+	
+	<!-- 여행을 삭제 -->
+	<delete id="deletePlan" parameterType="int">
+	DELETE member_plan
+	WHERE planseq = #{planseq}
+	
+	</delete>
+
+</mapper>

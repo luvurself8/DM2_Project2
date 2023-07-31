@@ -1,0 +1,310 @@
+@font-face {
+  font-family: "Giants-Regular";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/Giants-Bold.woff2")
+    format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Giants-Bold";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/Giants-Bold.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "TheJamsil1Thin";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302_01@1.0/TheJamsil5Bold.woff2")
+    format("woff2");
+  font-weight: 100;
+  font-style: normal;
+}
+@font-face {
+  font-family: "TheJamsil2Light";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302_01@1.0/TheJamsil5Bold.woff2")
+    format("woff2");
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: "TheJamsil3Regular";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302_01@1.0/TheJamsil5Bold.woff2")
+    format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "TheJamsil4Medium";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302_01@1.0/TheJamsil5Bold.woff2")
+    format("woff2");
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: "TheJamsil5Bold";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302_01@1.0/TheJamsil5Bold.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "TheJamsil6ExtraBold";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302_01@1.0/TheJamsil5Bold.woff2")
+    format("woff2");
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GmarketSansMedium";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pretendard-Black";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pretendard-Bold";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pretendard-ExtraBold";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pretendard-ExtraLight";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pretendard-Light";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pretendard-Medium";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pretendard-SemiBold";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pretendard-Thin";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 100;
+  font-style: normal;
+}
+
+
+
+/* Reset default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* Wrapper styles */
+.wrapper {
+    height: 100vh;
+    margin: 0;
+}
+
+/* Banner styles */
+.banner{
+    background-size: cover;
+    position: relative;
+    padding: 30px;
+    height:611px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+.banner_text{
+    margin: 70px;
+    margin-bottom: 00px;
+}
+
+@font-face {
+    font-family: "Giants-Bold";
+    src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/Giants-Bold.woff2") format("woff2");
+    font-weight: 1000;
+    font-style: normal;
+}
+
+.logo_title {
+    display: inline-block;
+    font-size: 80px;
+    font-weight: bold;
+    margin: 30px;
+    color: #f2f2f2;
+    font-family: 'Giants-Bold';
+}
+
+@font-face {
+    font-family: "Giants-Regular";
+    src: url("../fonts/Giants-Regular.woff") format("woff2");
+    font-weight: 1000;
+    font-style: normal;
+}
+
+.slogan {
+    text-align: center;
+    width: 100%;
+    justify-content: flex-start;
+    color: #f2f2f2;
+    font-size: 40px;
+    font-family: 'Giants-Regular';
+}
+
+
+/* Service Box styles */
+.service_box {
+    display: flex;
+    padding: 10px 0;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Pretendard-Regular";
+}
+
+.service_logo{
+    width: 100px;
+}
+
+.service_item {
+    display: flex;
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(250,250,250, 0.5);
+    margin-left: 80px;
+    margin-right: 80px;
+    margin-top: 30px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease-in-out;
+    cursor: pointer;
+    margin-bottom: 0px;
+}
+
+.service_item i {
+    font-size: 18px;
+    color: #000;
+    margin-bottom: 10px;
+}
+
+.service_item h5 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 15px;
+    margin-bottom: 0px;
+    color: #051367;
+}
+
+.service_item p {
+    color: #000;
+}
+
+.service_item:hover {
+    background-color: #dae1e7;
+}
+
+.service_btn {
+    padding: 12px 24px;
+    font-size: 20px;
+    background-color: #fff;
+    color: #0a2647;
+    border: none;
+    cursor: pointer;
+    border-radius: 20px;
+}
+
+.service_btn:hover {
+    background-color: #dae1e7;
+}
+
+.service_link {
+    text-decoration: none;
+}
+
+.service_link {
+    text-decoration: none;
+}
+
+
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.logoimage {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+}
+
+.menubar ul li {
+    color: #fff;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+.menubar ul li:hover {
+    color: #fea116;
+}
+
+.bank_text,
+.recom_text,
+.map_text {
+    font-size: 12px;
+}
+
+/* font
+
+font-family: 'Montagu Slab',
+serif;
+font-family: 'Montez',
+cursive;
+*/
+
+
+@font-face {
+    font-family: 'Giants-Bold';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/Giants-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}

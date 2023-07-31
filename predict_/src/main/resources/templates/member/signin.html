@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>로그인</title>
+
+	<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="./css/signin.css" th:href="@{/css/signin.css}">
+    <link rel="stylesheet" href="./css/header.css" th:href="@{/css/header.css}">
+
+
+    <script defer th:src="@{/script/signin.js}" src="./script/signin.js"></script>
+    <script th:src="@{/script/jquery-3.7.0.min.js}" src="./script/jquery-3.7.0.min.js"></script>
+    
+</head>
+<body>
+
+<div class="wrapper">
+
+   <!--header start-->
+           <div class="header">
+            <div  class="logo">
+                <a th:href="@{/}"  class="logo">TRIPCORD</a>
+            </div><!--end.logo-->
+            <div class="menubar">
+                <ul>
+					<li><a href="bankservice.html" th:href="@{/service/bankService}">환율 계산기</a></li>
+                    <li sec:authorize="not isAuthenticated()"><a href="signin.html" th:href="@{/member/signin}">로그인</a></li>
+                    <li sec:authorize="not isAuthenticated()"><a href="signup.html" th:href="@{/member/signup}">회원가입</a></li>
+					<li sec:authorize="isAuthenticated()">[[${#authentication.name}]]님</li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/member/signout}">로그아웃</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/member/myPage}">마이페이지</a></li>
+                </ul>
+            </div>
+
+        </div> <!--end.header-->
+
+    <div class="login_wrapper">
+        <div class="login_title">
+            <a href="#" class="fxpredict_link">TRIPCORD</a>
+        </div>
+        
+   <form th:action="@{/member/signin}" method="POST" class="signinForm">
+		<div class="login_type_in">
+			<label for="memberid">아이디</label>
+			<input type="text" id="memberid" name="memberid" placeholder="아이디입력" class="in"><br>
+		</div>
+		<label for="memberpwd">비밀번호</label>
+		<input type="password" id="memberpwd" name="memberpwd" placeholder="비밀번호입력" class="in"><br>
+		
+		
+		
+			<div class="login_btn">
+				<input type="submit"  id="submitBtn" value="로그인하기">
+			</div>
+	</form>     
+	<!-- Footer -->
+	</div> <!--end of  login wrapper -->
+    <div class="footer"> 
+        <div class="footer-menu">
+            <ul>
+                <li><a th:href="@{/}">Home</a></li>
+                <li><a th:href="@{/service/bankService}">Currency Calculator</a></li>
+                <li><a th:href="@{/service/mapService}">Map Service</a></li>
+            </ul>
+        </div>
+        <div class="footer-content">
+            <p class="border-bottom">&copy; 2023 FX predict. All Rights Reserved.</p>
+                <div class="btn-social">
+                    <a href="#"><i class="fa-facebook"></i></a>
+                    <a href="#"><i class="fa-twitter"></i></a>
+                    <a href="#"><i class="fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end of footer-->
+
+</div><!-- end of wrapper-->
+</body>
+</html>

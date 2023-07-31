@@ -1,0 +1,157 @@
+@charset "UTF-8";
+
+.bank_container {
+    width: 100%;
+    background-color: #f2f7fd;
+    height: 611px;
+    display: flex;
+    justify-content: center;
+}   
+
+#usdChart,
+#eurChart,
+#jpyChart{
+   margin-right: 13px;
+}
+
+.bank_row1{
+    margin-top: 80px;
+    height: 240px;
+    width: 540px;
+    margin-right: 122px;
+}
+
+.bank_row2{
+    margin-top: 70px;
+    margin-bottom: 20px;
+    width: 540px;
+    
+}
+
+.country_select1,.country_select2{
+    height: 60px;
+    margin: 25px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.bank_trans_input, .bank_trans_output, .exchange_rate_mostrecent{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    padding-left: 10px;
+    height: 55px;
+    width: 470px;
+    margin: 15px 0 15px 15px;
+    margin-bottom: 20px;
+    border: 2px solid rgb(207, 207, 207);
+    box-shadow: -1px -1px 2px #fff, inset 1px 1px 2px #bfbfbf;
+   font-family: "Pretendard-Thin";
+   font-size: 20px;
+}
+
+.input-box,
+.bank_output_container{
+   flex-direction: row;
+   justify-content: flex-end;
+}
+
+div.won,
+div.dollar,
+div.mostrecent{
+display:flex;
+align-items:center;
+}
+
+div.won label,
+div.dollar label,
+div.mostrecent label,
+div.won input,
+div.dollar input,
+div.mostrecent input {
+  text-align: left;
+}
+
+div.won label,
+div.dollar label,
+div.mostrecent label{
+   width: 110px;
+    font-size: 20px;
+}
+/* 버튼 스타일 
+
+.bank_send_btn, .bank_trans_btn{
+    margin: 25px;
+    height: 60px;
+    width: 125px;
+}
+
+.bank_send_btn, .bank_trans_btn {
+  background-color: #fea116;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 22px;
+}*/
+
+
+.bank_finder_btn {
+     display: inline;
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-size: 20px;
+    background: #5fa9b4;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    align-items: center;
+    margin: 5px;
+    margin-left: 240px;
+    margin-top: 10px;
+    font-family: "Pretendard-Thin";
+}
+
+.currency_button_container {
+    display: flex;
+    /* 요소들을 가로로 나열하도록 설정 */
+}
+
+.currency_button_container {
+    flex: 1;
+    /* 동일한 너비로 요소를 가로로 분할 */
+}
+
+.currency_button_container,
+.input_wrapper,
+.bank_finder_btn {
+   align-items: center;
+   justify-content: right;
+}
+
+.bank_btn {
+  border-radius: 20px;
+  font-size: 16px;
+  background: #5fa9b4;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  align-items: center;
+  font-family: "Pretendard-Thin";
+  width: 98px;
+  height: 50px;
+
+}
+
+.bank_btn#usdChart::after{
+   margin: 73px;
+}
+
+input[type="button"]:hover {
+box-shadow: 2px 2px 2px #2c6974;
+  cursor: pointer;
+}
+
+

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>지도 서비스</title>
+
+
+<link rel="stylesheet" href="./css/header.css" th:href="@{/css/header.css}">
+<link rel ="stylesheet"  th:href="@{/css/mapService.css}">
+
+<script th:src="@{/script/jquery-3.7.0.min.js}" src="./script/jquery-3.7.0.min.js"></script>
+<script defer th:src="@{/script/mapService.js}" src="./script/mapService.js"></script>
+
+<!-- <link rel="stylesheet" href="./css/recommendService.css" th:href="@{/css/recommendService.css}">  -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=66953a593ebfa6ca6534e6fde0830d81&libraries=services,clusterer,drawing"></script>
+<!--  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=66953a593ebfa6ca6534e6fde0830d81"></script>  -->
+
+<body>
+   <div class="wrapper">
+     <!--header start-->
+           <div class="header">
+            <div  class="logo">
+                <a th:href="@{/}"  class="logo">TRIPCORD</a>
+            </div><!--end.logo-->
+            <div class="menubar">
+                <ul>
+               <li><a href="bankservice.html" th:href="@{/service/bankService}">환율 계산기</a></li>
+                    <li sec:authorize="not isAuthenticated()"><a href="signin.html" th:href="@{/member/signin}">로그인</a></li>
+                    <li sec:authorize="not isAuthenticated()"><a href="signup.html" th:href="@{/member/signup}">회원가입</a></li>
+               <li sec:authorize="isAuthenticated()">[[${#authentication.name}]]님</li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/member/signout}">로그아웃</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/member/myPage}">마이페이지</a></li>
+                </ul>
+            </div>
+
+        </div> <!--end.header-->
+      
+
+      <div class="map_wrap">
+         <div id="map"
+            style="width: 100%; height:610px; position: relative; overflow: hidden;"></div>
+
+         <div id="menu_wrap" class="bg_white">
+            <div class="option">
+               <div>
+                  <form onsubmit="loading(); return false;">
+                  은행찾기 : 
+                  <select id="keyword">
+                     <option value="은행" selected>은행</option>
+                     <option value = "하나은행">하나은행</option>
+                     <option value = "신한은행">신한은행</option>
+                     <option value = "우리은행">우리은행</option>
+                  </select>
+                     <button type="submit">검색하기</button>
+                  </form>
+               </div>
+            </div>
+            <hr>
+            <ul id="placesList"></ul>
+            <div id="pagination"></div>
+         </div>
+      </div>
+
+
+      <!--footer start-->
+      <div class="footer">
+         <div class="footer-menu">
+            <ul>
+               <li><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/service/bankService}">Bank Service</a></li>
+                    <li><a th:href="@{/service/mapService}">Map Service</a></li>
+            </ul>
+         </div>
+         <div class="footer-content">
+            <p class="border-bottom">&copy; 2023 FX predict. All Rights
+               Reserved.</p>
+            <div class="btn-social">
+               <a href="#"><i class="fab fa-facebook"></i></a> <a href="#"><i
+                  class="fab fa-twitter"></i></a> <a href="#"><i
+                  class="fab fa-instagram"></i></a>
+            </div>
+         </div>
+      </div>
+      <!--end.footer-->
+
+   </div>
+   <!--end.wrapper-->
+
+</body>
+</html>

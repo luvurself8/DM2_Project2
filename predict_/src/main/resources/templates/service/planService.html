@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Maps API Example</title>
+<style>
+.routeTime {
+    padding: 15px;
+}
+/** 드래그앤 드랍 스타일링 지정 */
+.gu-mirror {
+   position: fixed !important;
+   margin: 0 !important;
+   z-index: 9999 !important;
+   opacity: 0.8;
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+   filter: alpha(opacity = 80);
+}
+
+.gu-hide {
+   display: none !important;
+}
+
+.gu-unselectable {
+   -webkit-user-select: none !important;
+   -moz-user-select: none !important;
+   -ms-user-select: none !important;
+   user-select: none !important;
+}
+
+.gu-transit {
+   opacity: 0.2;
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+   filter: alpha(opacity = 20);
+}
+
+/** 표 스타일링 지정 */
+.responstable {
+   color: #024457;
+   border: 0px;
+   text-align: center;
+   width: 100%;
+}
+
+.responstable tr:nth-child(odd) {
+   background-color: #EAF3F3;
+}
+
+.responstable th {
+   display: none;
+   border: 1px solid #FFF;
+   background-color: #167F92;
+   color: #FFF;
+   padding: 1em;
+}
+
+.responstable th:first-child {
+   display: table-cell;
+   text-align: center;
+}
+
+.responstable th:nth-child(2) {
+   display: table-cell;
+}
+
+.responstable th:nth-child(2) span {
+   display: none;
+}
+
+.responstable th:nth-child(2):after {
+   content: attr(data-th);
+}
+
+@media ( min-width : 480px) {
+   .responstable th:nth-child(2) span {
+      display: block;
+   }
+   .responstable th:nth-child(2):after {
+      display: none;
+   }
+}
+
+.responstable td {
+   display: block;
+   word-wrap: break-word;
+   max-width: 7em;
+}
+
+.responstable td:first-child {
+   display: table-cell;
+   text-align: center;
+   border-right: 1px solid #D9E4E6;
+}
+
+@media ( min-width : 480px) {
+   .responstable td {
+      border: 1px solid #D9E4E6;
+   }
+}
+
+.responstable th {
+   height: 30px;
+}
+
+.responstable th, .responstable td {
+   margin: .5em 1em;
+}
+
+@media ( min-width : 480px) {
+   .responstable th, .responstable td {
+      display: table-cell;
+      padding: 2px;
+   }
+}
+
+#map {
+   height: 400px;
+   width: 100%;
+   margin: 0 auto;
+}
+/*input 박스*/
+
+input.money, input.ex, textarea.memo, input.place_name{
+   width: 80%;
+   height: 30px;
+   border: None;
+}
+
+ input.memo {
+            width: 150px;
+        }
+
+ td.lat,
+        td.lng {
+            font-size: 0px;
+        }
+
+/*hidden*/
+.hidden {
+   visibility: hidden;
+   background-color: #f0f0f0;
+   font-size: 0px;
+}
+
+/* 바 스타일링 지정*/
+.select_exRate {
+   text-align: center;
+}
+
+/*search 박스 및 장소추가 버튼 */
+#search-bar {
+   height: 40px;
+   width: 313px;
+   border: 4px solid #167F92;
+   margin-left: 10px;
+}
+
+
+
+.out_exchange {
+   padding: 0 15px;
+}
+
+.menubar ul {
+    display: inline-flex;
+    list-style: none;
+
+}
+
+</style>
+
+<script type="text/javascript" th:src="@{/script/jquery-3.7.0.min.js}"></script>
+
+
+<script defer
+   src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js"></script>
+
+<link rel="stylesheet" th:href="@{/css/planService.css}">
+
+<script th:inline="javascript" defer th:src="@{/script/planService.js}"></script>
+
+<script th:src="@{/script/jquery-3.7.0.min.js}"
+   src="./script/jquery-3.7.0.min.js"></script>
+
+</head>
+<body th:each="p : ${plan}">
+   <input type="hidden" id="ctx"
+      th:value="${#httpServletRequest.getContextPath()}" />
+   <span class="headerBack"></span>
+
+   <!-- 기본 정보 가져와서 출력 -->
+   <header>
+      <h1>Plan Service</h1>
+      <nav>
+   <input type="hidden" id="planseq" th:value="${planseq}">
+   
+   <ul>
+      <li class = "centered-input">
+         <input type="text" id="destination" placeholder="여행지입력" th:value="${p.destination}">
+      </li>
+   </ul>
+   
+   <div class="date">
+      <ul>
+         <li class = "centered-input">
+            <label for="selectdate">출발 <input type="date" id="selectdate" name="startdate" th:value="${p.startdate}" readonly></label>
+         </li>
+         <li class = "centered-input">
+            <label for="selectdate">도착 <input type="date" id="selectdate" name="enddate" th:value="${p.enddate}" readonly></label>
+         </li>
+      </ul>
+   </div>
+
+   <!-- Daynum 뿌려지는 곳  -->
+
+   <div>
+      <ul id="DaynumResult">
+         <li><a href="#">Day [[${daynum}]]</a></li>
+         <li><input type="hidden" th:value="${daynum}" id="daynum"></li>
+      </ul>
+   </div>
+   
+   <hr>
+   
+   <!-- 환전금액 선택하는 곳 -->
+   <div class="select_exRate">
+      <ul>
+         <li>
+            <select class="exchange">
+               <option value="usd" selected>미달러</option>
+               <option value="jpy">엔화</option>
+               <option value="cny">위안화</option>
+               <option value="euro">유로화</option>
+            </select>
+         </li>
+      </ul>
+   </div>
+
+   <div class="out_exchange">
+      <ul>
+         <li>
+            <p><a>현재 환율 : <br><br><span class="presentRate" >[[${money.usd}]] / 원</span></a></p>
+         </li>
+         <li>
+            <p><a>총액(원) : <span class="total_won"> </span></a></p>
+         </li>
+         <li>
+            <p><a>환전 총액 : <span class="total_exR"></span></a></p>
+         </li>
+      </ul>
+   </div>
+   
+   <hr>
+   
+   <div class="routeTime">
+      <ul>
+         <li>
+            <a>총 소요시간 : <br><br><span id="expactRouteTime" > </span></a>
+         </li>
+      </ul>
+   </div>
+</nav>
+      
+   </header>
+
+
+   <main>
+      <div class="title">
+         <div class="menubar">
+                <ul>
+                   <li><a th:href="@{/}">TRIPCORD</a></li>
+               <li><a href="bankservice.html" th:href="@{/service/bankService}">환율 계산기</a></li>
+                    <li sec:authorize="not isAuthenticated()"><a href="signin.html" th:href="@{/member/signin}">로그인</a></li>
+                    <li sec:authorize="not isAuthenticated()"><a href="signup.html" th:href="@{/member/signup}">회원가입</a></li>
+               <li sec:authorize="isAuthenticated()"><a href="#">[[${#authentication.name}]]님</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/member/signout}">로그아웃</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/member/myPage}">마이페이지</a></li>
+                </ul>
+            </div>
+     
+      </div>
+
+      <div class=map_area>
+
+         <input id="search-bar" type="text" placeholder="장소를 검색하세요" />
+         
+         <div class = "buttons_with_functions">
+         <button id="add-to-list">장소 목록에 추가</button>
+         <button id="optimizedRoute">최적의 경로 찾아주기</button>
+         <button id="insert">여행 저장하기</button>
+         </div>
+         
+         <div class = "buttons_with_modes">
+         <button id="driverMode">드라이버 모드</button>
+         <button id="walkingMode">뚜벅이 모드</button>
+         <button id="bicycleMode">자전거 모드</button>
+         <button id="transitMode">대중교통 모드</button>
+
+         </div>
+         </div>
+         
+         <div id="map"></div>
+
+      </div>
+
+      <div class="planArea">
+         <table id="travel-list" border="1" class="responstable">
+            <thead>
+               <tr>
+                  <th style="width:5%;">순서</th>
+                  <th style="width:25%;">장소이름</th>
+                  <th style="width:20%;">예산</th>
+                  <th style="width:20%;">환전액</th>
+                  <th style="width:25%;">메모</th>
+                  <th style="width:5%;">삭제</th>
+                  <th class="hidden" style="width: 0%; padding: 0px; margin : 0px;"></th>
+                  <th  class="hidden" style="width: 0%; padding: 0px; margin : 0px;"></th>
+               </tr>
+            </thead>
+            <tbody id="tBody">
+               <tr th:each="l:${list}" class="draggable" draggable="true">
+                  <td class="order">[[${l.placenum}]]</td>
+                  <td ><input class="place_name" th:value="${l.placename}"></td>
+                  <td><input type="number" class="money" placeholder="예산액"
+                     th:value="${l.placebudget}">원</td>
+                  <td><input type="number" class="ex" placeholder="환전액"></td>
+                  <td><textarea class="memo" th:text="${l.placememo}"></textarea></td>
+                  <td><input type='button' class='delete' value='삭제'></td>
+                  <td class="lat hidden">[[${l.lat}]]</td>
+                  <td class="lng hidden">[[${l.lng}]]</td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+   </main>
+
+   <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATFi8TyU4qIwkOVR3s_jzNzkKtmFMdQho&libraries=places&callback=initMap"
+      defer async></script>
+   <script>
+        var map;
+        var bounds = null;
+        var marker;
+        var place;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 37.5665, lng: 126.978 },
+                zoom: 12,
+            });
+            
+            bounds = new google.maps.LatLngBounds();
+            
+            // 계획 리스트에 있는 장소 모음
+            table_list_load();
+            
+            var searchInput = document.getElementById("search-bar");
+            var autocomplete = new google.maps.places.Autocomplete(searchInput);
+
+            // 장소가 바뀔 때 (장소를 검색할 때)
+            autocomplete.addListener("place_changed", function () {
+               // 변수 초기화
+               marker=[];
+               place=[];
+               //새로운 지도 로드
+               map = new google.maps.Map(document.getElementById("map"));
+               //테두리 새로 설정
+               bounds = new google.maps.LatLngBounds();
+               //테이블에 저장되어있는 것 마커표시
+               table_list_load();
+               // 검색
+               searching(autocomplete);
+               document.getElementById("search-bar").value="";
+           
+            });
+
+        }
+/*
+드라이버 모드
+ */
+      document.getElementById("driverMode").addEventListener('click', function() {
+        if (document.querySelectorAll('.lng').length < 3) {
+          alert("지도에 표시된 장소가 3 곳 이상이어야 합니다");
+          return;
+        }
+
+        // 변수 초기화
+        marker = [];
+        place = [];
+
+        // 새로운 지도 로드
+        map = new google.maps.Map(document.getElementById("map"));
+
+        // 테두리 새로 설정
+        bounds = new google.maps.LatLngBounds();
+
+        // Directions API 호출을 위한 서비스 생성
+        var directionsService = new google.maps.DirectionsService();
+
+        // 현재 지도에 표시된 마커들 가져오기
+        var markers = []; // map은 지도 객체
+
+        var rows = document.getElementById("tBody").querySelectorAll("tr");
+        if (rows.length < 1) return;
+
+        for (let temp of rows) {
+          marker = [];
+          place = [];
+          var labelNum = temp.querySelector(".order").innerHTML;
+          var lat = parseFloat(temp.querySelector(".lat").innerHTML);
+          var lng = parseFloat(temp.querySelector(".lng").innerHTML);
+          var place_name = temp.querySelector(".place_name").value;
+          createMarker(place_name, lat, lng, labelNum);
+          bounds.extend(marker.getPosition());
+          markers.push(marker);
+        }
+
+        // 마커 위치 정보를 Directions API 요청용 위치 배열로 변환
+        var waypoints = markers.map(function(oneMarker) {
+          return {
+            location: oneMarker.getPosition() // 마커의 위치 정보
+          };
+        });
+
+        // Directions API 요청 설정
+        var request = {
+          origin: waypoints[0].location, // 출발지
+          waypoints: waypoints.slice(1, waypoints.length - 1), // 경유지
+          destination: waypoints[waypoints.length - 1].location, // 도착지
+          travelMode: google.maps.TravelMode.DRIVING // 이동 방법 (DRIVING, WALKING 등)
+        };
+
+        // Directions API 요청 보내기
+        directionsService.route(request, function(response, status) {
+          if (status === google.maps.DirectionsStatus.OK) {
+            var directionsRenderer = new google.maps.DirectionsRenderer({
+              map: map, // 경로를 표시할 맵 객체 설정
+              preserveViewport: false, // 경로를 표시할 때 맵의 영역을 유지
+              suppressMarkers: true
+            });
+            directionsRenderer.setDirections(response); // 경로 표시
+            
+            var route = response.routes[0];
+            var legs = route.legs;
+            var totalDuration = 0;
+            for (var i = 0; i < legs.length; i++) {
+              totalDuration += legs[i].duration.value;
+            }
+            var hours = Math.floor(totalDuration / 3600);
+            var minutes = Math.floor((totalDuration % 3600) / 60);
+            document.getElementById("expactRouteTime").innerHTML= hours + " 시간 " + minutes + " 분";
+          }
+        });
+      });
+      /*
+     뚜벅이모드
+       */
+            document.getElementById("walkingMode").addEventListener('click', function() {
+              if (document.querySelectorAll('.lng').length < 3) {
+                alert("지도에 표시된 장소가 3 곳 이상이어야 합니다");
+                return;
+              }
+
+              // 변수 초기화
+              marker = [];
+              place = [];
+
+              // 새로운 지도 로드
+              map = new google.maps.Map(document.getElementById("map"));
+
+              // 테두리 새로 설정
+              bounds = new google.maps.LatLngBounds();
+
+              // Directions API 호출을 위한 서비스 생성
+              var directionsService = new google.maps.DirectionsService();
+
+              // 현재 지도에 표시된 마커들 가져오기
+              var markers = []; // map은 지도 객체
+
+              var rows = document.getElementById("tBody").querySelectorAll("tr");
+              if (rows.length < 1) return;
+
+              for (let temp of rows) {
+                marker = [];
+                place = [];
+                var labelNum = temp.querySelector(".order").innerHTML;
+                var lat = parseFloat(temp.querySelector(".lat").innerHTML);
+                var lng = parseFloat(temp.querySelector(".lng").innerHTML);
+                var place_name = temp.querySelector(".place_name").value;
+                createMarker(place_name, lat, lng, labelNum);
+                bounds.extend(marker.getPosition());
+                markers.push(marker);
+              }
+
+              // 마커 위치 정보를 Directions API 요청용 위치 배열로 변환
+              var waypoints = markers.map(function(oneMarker) {
+                return {
+                  location: oneMarker.getPosition() // 마커의 위치 정보
+                };
+              });
+
+              // Directions API 요청 설정
+              var request = {
+                origin: waypoints[0].location, // 출발지
+                waypoints: waypoints.slice(1, waypoints.length - 1), // 경유지
+                destination: waypoints[waypoints.length - 1].location, // 도착지
+                travelMode: google.maps.TravelMode.WALKING // 이동 방법 (DRIVING, WALKING 등)
+              };
+
+              // Directions API 요청 보내기
+              directionsService.route(request, function(response, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                  var directionsRenderer = new google.maps.DirectionsRenderer({
+                    map: map, // 경로를 표시할 맵 객체 설정
+                    preserveViewport: false, // 경로를 표시할 때 맵의 영역을 유지
+                    suppressMarkers: true
+                  });
+                  directionsRenderer.setDirections(response); // 경로 표시
+                  
+                  var route = response.routes[0];
+                  var legs = route.legs;
+                  var totalDuration = 0;
+                  for (var i = 0; i < legs.length; i++) {
+                    totalDuration += legs[i].duration.value;
+                  }
+                  var hours = Math.floor(totalDuration / 3600);
+                  var minutes = Math.floor((totalDuration % 3600) / 60);
+                  document.getElementById("expactRouteTime").innerHTML= hours + " 시간 " + minutes + " 분";
+                }
+              });
+            });
+            /*
+            자전거 모드
+          */
+          document.getElementById("bicycleMode").addEventListener('click', function() {
+            if (document.querySelectorAll('.lng').length < 3) {
+              alert("지도에 표시된 장소가 3 곳 이상이어야 합니다");
+              return;
+            }
+
+            // 변수 초기화
+            marker = [];
+            place = [];
+
+            // 새로운 지도 로드
+            map = new google.maps.Map(document.getElementById("map"));
+
+            // 테두리 새로 설정
+            bounds = new google.maps.LatLngBounds();
+
+            // Directions API 호출을 위한 서비스 생성
+            var directionsService = new google.maps.DirectionsService();
+
+            // 현재 지도에 표시된 마커들 가져오기
+            var markers = []; // map은 지도 객체
+
+            var rows = document.getElementById("tBody").querySelectorAll("tr");
+            if (rows.length < 1) return;
+
+            for (let temp of rows) {
+              marker = [];
+              place = [];
+              var labelNum = temp.querySelector(".order").innerHTML;
+              var lat = parseFloat(temp.querySelector(".lat").innerHTML);
+              var lng = parseFloat(temp.querySelector(".lng").innerHTML);
+              var place_name = temp.querySelector(".place_name").value;
+              createMarker(place_name, lat, lng, labelNum);
+              bounds.extend(marker.getPosition());
+              markers.push(marker);
+            }
+
+            // 마커 위치 정보를 Directions API 요청용 위치 배열로 변환
+            var waypoints = markers.map(function(oneMarker) {
+              return {
+                location: oneMarker.getPosition() // 마커의 위치 정보
+              };
+            });
+
+            // Directions API 요청 설정
+            var request = {
+              origin: waypoints[0].location, // 출발지
+              waypoints: waypoints.slice(1, waypoints.length - 1), // 경유지
+              destination: waypoints[waypoints.length - 1].location, // 도착지
+              travelMode: google.maps.TravelMode.BICYCLING // 이동 방법 (BICYCLING)
+            };
+
+            // Directions API 요청 보내기
+            directionsService.route(request, function(response, status) {
+              if (status === google.maps.DirectionsStatus.OK) {
+                var directionsRenderer = new google.maps.DirectionsRenderer({
+                  map: map, // 경로를 표시할 맵 객체 설정
+                  preserveViewport: false, // 경로를 표시할 때 맵의 영역을 유지
+                  suppressMarkers: true
+                });
+                directionsRenderer.setDirections(response); // 경로 표시
+                
+                var route = response.routes[0];
+                var legs = route.legs;
+                var totalDuration = 0;
+                for (var i = 0; i < legs.length; i++) {
+                  totalDuration += legs[i].duration.value;
+                }
+                var hours = Math.floor(totalDuration / 3600);
+                var minutes = Math.floor((totalDuration % 3600) / 60);
+                document.getElementById("expactRouteTime").innerHTML = hours + " 시간 " + minutes + " 분";
+              }
+            });
+          });
+
+          /*
+          대중교통 모드
+        */
+        document.getElementById("transitMode").addEventListener('click', function() {
+          if (document.querySelectorAll('.lng').length < 2) {
+            alert("지도에 표시된 장소가 2 곳 이상이어야 합니다");
+            return;
+          }
+
+          // 변수 초기화
+          marker = [];
+          place = [];
+
+          // 새로운 지도 로드
+          map = new google.maps.Map(document.getElementById("map"));
+
+          // 테두리 새로 설정
+          bounds = new google.maps.LatLngBounds();
+
+          // Directions API 호출을 위한 서비스 생성
+          var directionsService = new google.maps.DirectionsService();
+
+          // 현재 지도에 표시된 마커들 가져오기
+          var markers = []; // map은 지도 객체
+
+          var rows = document.getElementById("tBody").querySelectorAll("tr");
+          if (rows.length < 1) return;
+
+          for (let temp of rows) {
+            marker = [];
+            place = [];
+            var labelNum = temp.querySelector(".order").innerHTML;
+            var lat = parseFloat(temp.querySelector(".lat").innerHTML);
+            var lng = parseFloat(temp.querySelector(".lng").innerHTML);
+            var place_name = temp.querySelector(".place_name").value;
+            createMarker(place_name, lat, lng, labelNum);
+            bounds.extend(marker.getPosition());
+            markers.push(marker);
+          }
+
+          // 출발지와 도착지 설정
+          var origin = markers[0].getPosition();
+          var destination = markers[markers.length - 1].getPosition();
+
+          // Directions API 요청 설정
+          var request = {
+            origin: origin, // 출발지
+            destination: destination, // 도착지
+            travelMode: google.maps.TravelMode.TRANSIT // 이동 방법 (TRANSIT)
+          };
+
+          // Directions API 요청 보내기
+          directionsService.route(request, function(response, status) {
+            if (status === google.maps.DirectionsStatus.OK) {
+              var directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map, // 경로를 표시할 맵 객체 설정
+                preserveViewport: false, // 경로를 표시할 때 맵의 영역을 유지
+                suppressMarkers: true
+              });
+              directionsRenderer.setDirections(response); // 경로 표시
+
+              var route = response.routes[0];
+              var legs = route.legs;
+              var totalDuration = 0;
+              for (var i = 0; i < legs.length; i++) {
+                totalDuration += legs[i].duration.value;
+              }
+              var hours = Math.floor(totalDuration / 3600);
+              var minutes = Math.floor((totalDuration % 3600) / 60);
+              document.getElementById("expactRouteTime").innerHTML = hours + " 시간 " + minutes + " 분";
+            }
+          });
+        });
+
+/*리스트 추가*/           
+                  
+                document
+                .getElementById("add-to-list")
+                .addEventListener("click", function () {
+                    addToTravelList();
+                    initMap();
+                });
+                
+
+/*
+테이블에 있는 것 로드
+*/
+        function table_list_load() {
+            var rows = document.getElementById("tBody").querySelectorAll("tr");
+            if (rows.length < 1) return;
+          
+            for(let temp of rows) {
+               if (temp.querySelector(".lat").innerHTML == "") continue;
+               marker=[];
+               place=[];
+               var labelNum = temp.querySelector(".order").innerHTML;
+               var lat = parseFloat(temp.querySelector(".lat").innerHTML);
+               var lng = parseFloat(temp.querySelector(".lng").innerHTML);
+               var place_name = temp.querySelector(".place_name").value;
+               createMarker(place_name, lat, lng, labelNum);
+                bounds.extend(marker.getPosition());
+             
+            }
+        
+      
+            map.fitBounds(bounds);
+        }
+        
+/*
+검색함수
+*/
+
+        function searching(autocomplete) {
+            place = autocomplete.getPlace();
+
+            if (!place.geometry) {
+                window.alert("장소를 선택하세요.");
+                return;
+            }
+
+            var place_lat = place.geometry.location.lat();
+            var place_lng = place.geometry.location.lng();
+            var place_name = place.name;
+
+            createMarker(place_name, place_lat, place_lng, null);
+            
+        }
+
+        function createMarker(place_name, place_lat, place_lng, labelNum) {
+            marker = new google.maps.Marker({
+                map: map,
+                position: { lat: place_lat, lng: place_lng },
+                label: {
+                   text: labelNum,
+                   fontSize:'1.7em',
+                   fontWeight: 'bolder',
+                   color: "white"
+                },
+                title: place_name,
+                icon: {
+                    url: "https://cdn-icons-png.flaticon.com/512/3944/3944427.png",
+                    scaledSize: new google.maps.Size(40, 40), // 아이콘 크기
+                    labelOrigin: new google.maps.Point(20, 20), // 라벨 위치
+                }
+                
+                
+            });
+            
+            var content =  "<strong>"+ place_name + "</strong>";
+
+            map.panTo(new google.maps.LatLng(place_lat, place_lng));
+            map.setZoom(10);
+
+            var infowindow = new google.maps.InfoWindow({
+                content: content,
+            });
+
+           infowindow.open(map, marker);
+            
+        }
+
+        function addToTravelList() {
+            if (place == null){
+                alert("검색 후 추가해주세요");
+            }
+            //alert("작동중");
+            listItem = document.createElement("tr");
+            listItem.setAttribute("draggable", true);
+            listItem.setAttribute("class", "draggable");
+            listItem.innerHTML =
+                '<td class="order"> </td>' +
+                '<td><input type="text" class="place_name" value = "'+ place.name +'">'+
+                '</td><td><input type="number" class="money" placeholder="예산액">원</td>'+
+               '<td><input type="number" class="ex" placeholder="환전액"></td>'+
+                '<td><textarea class="memo" placeholder="메모"></textarea></td>' +
+                "</td><td> <input type = 'button' class = 'delete' value = '삭제'</td>"+
+                '<td class="lat hidden">' +
+                place.geometry.location.lat() +
+                "</td>" +
+                '<td class="lng hidden">' +
+                place.geometry.location.lng()+"</td>";
+ 
+            document.getElementById("tBody").appendChild(listItem);
+            
+            updateOrder();
+        }
+
+
+        document.getElementById('travel-list').addEventListener('click', function(event) {
+            if (event.target.classList.contains('delete')) {
+                event.target.closest('tr').remove();
+                updateOrder();
+                initMap();
+            }
+        });
+        
+        function updateOrder() {
+           var rows = document.getElementById('tBody').getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+            rows[i].getElementsByTagName('td')[0].innerHTML = i+1;
+            }
+          }
+        
+        
+        $(function () {
+            
+            //드래그 앤 드랍 시작
+
+            var drake = dragula([document.getElementById('tBody')]);
+    
+            drake.on('drop', function (el, target, source, sibling) {
+
+            // 행 순서 변경 처리
+                    var rows = Array.from(target.querySelectorAll('tr'));
+
+                    rows.forEach(function (row, index) {
+                        row.querySelector('td.order').innerHTML = index + 1;
+                    });
+                    initMap();
+                });
+            
+            sumWon();
+            
+            
+            // 예산총액
+            
+        function sumWon() {
+            var rows = $('#tBody tr');
+            if (rows.length < 1) return;
+            var exR = parseFloat($('.presentRate').text());
+
+            var wonTotal = 0;
+
+            for (let i = 0; i < rows.length; i++) {
+                  if (isNaN(parseFloat($(rows[i]).find('.money').val()))) continue;
+               var won = parseFloat($(rows[i]).find('.money').val());
+               $(rows[i]).find('.ex').val((won / exR).toFixed(2));
+               wonTotal += won;
+                  }
+
+            $(".total_won").html(wonTotal);
+            $(".total_exR").html((parseFloat($(".total_won").text()) / exR).toFixed(2));
+      }
+
+            
+           // insert
+           
+           $("#insert").on("click", sendData);
+           
+            function sendData() {      
+            var travelData = [];
+            
+            var rows = $('#tBody tr');
+            rows.each(function() {
+                var travelObj = {
+                       'planseq': $("#planseq").val(),
+                       'daynum': $("#daynum").val(),
+                       'placenum': $(this).find(".order").text(),
+                       'placename': $(this).find(".place_name").val(),
+                       'placebudget': $(this).find(".money").val(),
+                       'placememo': $(this).find(".memo").val(),
+                       'lat': $(this).find(".lat").text(),
+                       'lng': $(this).find(".lng").text()
+                    };
+                    travelData.push(travelObj);
+               
+             });
+
+            // JSON 직렬화
+            var jsonData = JSON.stringify(travelData);
+         console.log(jsonData);
+            // AJAX 요청
+            $.ajax({
+                url: 'insertPlanservice',
+                type: 'POST',
+                data: jsonData,
+                contentType: 'application/json',
+                success: function(response) {
+                    alert('여행이 저장되었습니다');
+                },
+                error: function(error) {
+                   alert("여행 저장에 실패했습니다");
+                }
+            });
+        }
+            
+            // 환율 셀렉이 바뀔 때
+
+            $(".exchange").on("change", function(){
+               var ex;
+               switch($(this).val()){
+               
+               case "usd" :
+                  ex = "[[${money.usd}]]";
+                  break;
+               case "jpy" : 
+                  ex = "[[${money.jpy}]]";
+                  break;
+               case "cny" : 
+                  ex = "[[${money.cny}]]";
+                  break;
+               case "euro" : 
+                  ex = "[[${money.euro}]]";
+                  break;
+               
+               }
+               
+               $(".presentRate").html(ex);
+               
+              sumWon();
+               
+            })
+            
+         
+            $("#travel-list").on("click",".money", function(){
+            $(".money").on("keyup", function(){
+               var exR = parseFloat($('.presentRate').text());
+              
+               var won = parseFloat($(this).val());
+     
+               $(this).closest('tr').find('.ex').val((won/exR).toFixed(2));
+               
+               sumWon();
+             })
+            });
+          
+        
+        });
+        
+     
+        
+        document.getElementById("optimizedRoute").addEventListener("click", function() {
+            // 테이블에서 장소들의 좌표 가져오기
+            var rows = document.getElementById("tBody").querySelectorAll("tr");
+            var locations = [];
+            for (var i = 0; i < rows.length; i++) {
+               if (rows[i].querySelector(".lat").innerHTML == "") continue;
+               var lat = parseFloat(rows[i].querySelector(".lat").innerHTML);
+                var lng = parseFloat(rows[i].querySelector(".lng").innerHTML);
+                locations.push({ lat: lat, lng: lng });
+            }
+
+            // 거리 행렬 생성
+            var distanceMatrix = createDistanceMatrix(locations);
+
+            // 최적의 방문 순서 계산
+            var optimalOrder = calculateOptimalOrder(distanceMatrix);
+
+            // 방문 순서에 따라 맵의 마커 순서 변경 및 맵 업데이트
+            updateMarkerOrder(optimalOrder, rows);
+        });
+
+        function updateMarkerOrder(order, rows) {
+            var markers = [];
+            var path = [];
+            bounds =  new google.maps.LatLngBounds();
+            for (var i = 0; i < order.length; i++) {
+                var index = order[i];
+                var row = rows[index];
+
+                var marker = createMarkerFromRow(row, i + 1);
+                bounds.extend(marker.getPosition());
+                markers.push(marker);
+                
+                var content = "<strong>"+ (i+1) + " "+ marker.getTitle() + "</strong>";
+
+
+                var infowindow = new google.maps.InfoWindow({
+                    content: content,
+                });
+
+               infowindow.open(map, marker);
+
+                var lat = parseFloat(row.querySelector(".lat").innerHTML);
+                var lng = parseFloat(row.querySelector(".lng").innerHTML);
+                path.push({ lat: lat, lng: lng });
+            }
+            
+            // 새로운 맵 정의
+             map = new google.maps.Map(document.getElementById("map"), {
+            });
+            
+             map.fitBounds(bounds);
+
+            
+            // 새로운 순서로 마커 추가
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
+
+            // 선 그리기
+            drawPath(path);
+            
+            updateTableOrder(order, rows);
+        }
+
+        function calculateOptimalOrder(distanceMatrix) {
+            var order = [0]; // 출발 장소의 인덱스를 0으로 설정
+            var remaining = Array.from(distanceMatrix.keys()).slice(1); // 출발 장소를 제외한 나머지 장소들의 인덱스
+
+            while (remaining.length > 0) {
+                var current = order[order.length - 1];
+                var next = findClosestLocation(current, remaining, distanceMatrix);
+                order.push(next);
+                remaining.splice(remaining.indexOf(next), 1);
+            }
+
+            return order;
+        }
+
+        function findClosestLocation(current, remaining, distanceMatrix) {
+            var closest = null;
+            var minDistance = Infinity;
+
+            for (var i = 0; i < remaining.length; i++) {
+                var distance = distanceMatrix[current][remaining[i]];
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closest = remaining[i];
+                }
+            }
+
+            return closest;
+        }
+
+        function updateTableOrder(order, rows) {
+            var tbody = document.getElementById("tBody");
+            var newRows = [];
+
+            for (var i = 0; i < order.length; i++) {
+                var index = order[i];
+                newRows.push(rows[index]);
+            }
+            for (var i = 0; i< rows.length; i++){
+               if(rows[i].querySelector(".lat").innerHTML == ""){
+                  newRows.push(rows[i]);
+               }
+            }
+
+            tbody.innerHTML = "";
+            for (var i = 0; i < newRows.length; i++) {
+                tbody.appendChild(newRows[i]);
+            }
+            updateOrder();
+        }
+
+        function createMarkerFromRow(row, order) {
+            var lat = parseFloat(row.querySelector(".lat").innerHTML);
+            var lng = parseFloat(row.querySelector(".lng").innerHTML);
+            var placeName = row.querySelector(".place_name").value;
+
+            return new google.maps.Marker({
+                map: map,
+                position: { lat: lat, lng: lng },
+                label: {
+                   text: order.toString(),
+                   fontSize:'1.5em',
+                   fontWeight: 'bolder',
+                   color: "white"
+                },
+                title: placeName,
+                icon: {
+                    url: "https://cdn-icons-png.flaticon.com/512/3944/3944427.png",
+                    scaledSize: new google.maps.Size(40, 40), // 아이콘 크기
+                    labelOrigin: new google.maps.Point(20, 20), // 라벨 위치
+                }
+                
+            });
+            
+        }
+            
+          
+
+        function drawPath(path) {
+            var line = new google.maps.Polyline({
+                path: path,
+                geodesic: true,
+                strokeColor: "black",
+                strokeOpacity: 1.0,
+                strokeWeight: 4
+            });
+
+            line.setMap(map);
+        }
+        function createDistanceMatrix(locations) {
+            var distanceMatrix = [];
+            for (var i = 0; i < locations.length; i++) {
+                var distances = [];
+                for (var j = 0; j < locations.length; j++) {
+                    if (i === j) {
+                        distances.push(0);
+                    } else {
+                        var distance = calculateDistance(locations[i], locations[j]);
+                        distances.push(distance);
+                    }
+                }
+                distanceMatrix.push(distances);
+            }
+            return distanceMatrix;
+        }
+        
+        function calculateDistance(location1, location2) {
+            var lat1 = location1.lat;
+            var lng1 = location1.lng;
+            var lat2 = location2.lat;
+            var lng2 = location2.lng;
+
+            var R = 6371; // 지구의 반지름 (단위: km)
+            var dLat = deg2rad(lat2 - lat1);
+            var dLng = deg2rad(lng2 - lng1);
+            var a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var distance = R * c;
+
+            return distance;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+
+
+
+    </script>
+
+</body>
+</html>
