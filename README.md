@@ -1,6 +1,7 @@
 # DM2_Project2
 디지털 마스터 2기_ 2차 프로젝트(지도 API를 이용한 여행 플랜/기록 서비스)
-
+<br> 2nd Project at Digital Masater Program
+<br> Travel planning web service utlizing Map API (GoogleMap, Kakao Map)
 링크 :  <https://drive.google.com/drive/folders/1GK0yX1X8cTZZjbr0iFqLW8AcFWWcQKtG>
 
 # 트립코드 사용방법
