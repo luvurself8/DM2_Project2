@@ -1,4 +1,4 @@
-# DM2_Project2
+# DM2_Project2_Travel planning web service utlizing Map API 
 디지털 마스터 2기_ 2차 프로젝트(지도 API를 이용한 여행 플랜/기록 서비스)
 <br> 2nd Project at Digital Masater Program
 <br> Travel planning web service utlizing Map API (GoogleMap, Kakao Map)
